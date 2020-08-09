@@ -5,6 +5,7 @@
 Clone repo
 
 ```bash
+cd ~  # Go to home
 git clone https://github.com/cgm-lab/cgm-one-monitor-api.git ~/cgm-one-monitor-api
 ```
 
