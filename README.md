@@ -5,7 +5,7 @@
 Clone repo
 
 ```bash
-git clone {} ~/cgm-one-monitor-api
+git clone git@github.com:cgm-lab/cgm-one-monitor-api.git ~/cgm-one-monitor-api
 ```
 
 Install `requirements.txt`
