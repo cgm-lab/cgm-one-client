@@ -1,1 +1,1 @@
-python ~/cgm-one-monitor-api/app.py
+python %userprofile%/cgm-one-monitor-api/app.py
