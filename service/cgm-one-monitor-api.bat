@@ -1,0 +1,1 @@
+python ~/cgm-one-monitor-api/app.py
