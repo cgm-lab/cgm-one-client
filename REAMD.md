@@ -29,7 +29,8 @@ python app.py
 ## Service
 
 - Linux
-  Copy file from `service/cgm-one-monitor-api.service` to `/etc/systemd/system/cgm-one-monitor-api.service`
+  - Copy file from `service/cgm-one-monitor-api.service` to `/etc/systemd/system/cgm-one-monitor-api.service`
+  - Modify user name
   - <https://askubuntu.com/a/919059>
 - Windows
   - Copy file from `service/cgm_one_monitor_api.bat` to path `[D|C]:\Users\{User}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup` or `shell:common startup`
