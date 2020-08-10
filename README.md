@@ -34,5 +34,6 @@ python app.py
   - Modify user name
   - <https://askubuntu.com/a/919059>
 - Windows
+  - Disable `Quick Edit mode` in CMD
   - Copy file from `service/cgm_one_monitor_api.bat` to path `[D|C]:\Users\{User}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup` or `shell:common startup`
   - <https://stackoverflow.com/questions/21218346/run-batch-file-on-start-up>
