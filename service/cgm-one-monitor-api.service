@@ -2,6 +2,7 @@
 Description=Python CGM One Monitor API Service
 
 [Service]
+Type=simple
 ExecStart=/usr/bin/python3 ~/cgm-one-monitor-api/app.py
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
@@ -11,14 +12,8 @@ Environment=PYTHONUNBUFFERED=1
 # Automatically restart the service if it crashes
 Restart=on-failure
 
-# Our service will notify systemd once it is up and running
-Type=notify
-
 # Use a dedicated user to run our service
 User={your_user_name}
 
 [Install]
-
-# Tell systemd to automatically start this service when the system boots
-# (assuming the service is enabled)
-WantedBy=default.target
+WantedBy=multi-user.target
