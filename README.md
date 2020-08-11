@@ -12,7 +12,8 @@ git clone https://github.com/cgm-lab/cgm-one-monitor-api.git ./cgm-one-monitor-a
 Install `requirements.txt`
 
 ```bash
-pip install requirements.txt
+cd cgm-one-monitor-api
+pip install -r requirements.txt
 ```
 
 ## Run
