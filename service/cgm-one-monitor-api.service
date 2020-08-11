@@ -3,7 +3,7 @@ Description=Python CGM One Monitor API Service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 ~/cgm-one-monitor-api/app.py
+ExecStart=/usr/bin/python3 /home/{your_user_name}/cgm-one-monitor-api/app.py
 
 # Disable Python's buffering of STDOUT and STDERR, so that output from the
 # service shows up immediately in systemd's logs
