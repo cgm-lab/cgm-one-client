@@ -1,4 +1,4 @@
-import platform
+import os
 import socket
 from datetime import datetime
 
@@ -24,9 +24,23 @@ def get_all_metrics(unit: str = "GB"):
 
 
 # OS
-def get_os_platform():
-    # TODO: Get os lsb release
-    return platform.platform()
+def get_os_platform() -> str:
+    from sys import platform as pf
+
+    if pf.startswith("win"):
+        from platform import system, version
+
+        return system() + " " + version()
+    elif pf == "darwin":
+        from plistlib import load
+
+        d = load(open("/System/Library/CoreServices/SystemVersion.plist", "rb"))
+        return d["ProductName"] + " " + d["ProductUserVisibleVersion"]
+    elif pf == "linux":
+        return next(
+            filter(lambda l: "PRETTY_NAME" in l, open("/etc/os-release").readlines())
+        ).split('"')[1]
+    raise NotImplementedError(pf)
 
 
 # CPU
