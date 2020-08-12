@@ -15,6 +15,7 @@ def get_all_metrics(unit: str = "GB"):
     return {
         "os": get_os_platform(),
         "ip": get_ip(),
+        "cpu": get_cpu_usage(),
         "ram": get_virtual_memory(unit),
         "disks": get_disks_space(unit),
         "vram": get_gups_vram(unit),
