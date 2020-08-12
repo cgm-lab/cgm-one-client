@@ -24,7 +24,7 @@ async def source_host_check(request, call_next):
 
 
 @app.get("/api")
-async def main():
+def main():
     metrics = get_all_metrics()
     return metrics
 
