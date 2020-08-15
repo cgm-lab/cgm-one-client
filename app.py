@@ -1,34 +1,58 @@
 import socket
+import sys
+import time
 
-import uvicorn
-from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
+import requests
+import schedule
 
 from client import get_all_metrics
-from utils import get_server_ip
 
-SERVER_IP = get_server_ip()
-
-app = FastAPI()
+SERVER = "one.cgm.im"
 
 
-@app.middleware("http")
-async def source_host_check(request, call_next):
-    """Only allow CGM Lab server"""
-    ip = request.client.host
-    if ip not in ["127.0.0.1", SERVER_IP]:
-        print(ip, "is not allowed!")
-        return JSONResponse({}, status_code=status.HTTP_403_FORBIDDEN)
-    response = await call_next(request)
-    return response
+class Service:
+    token: str = ""
+
+    def push(self):
+        metrics = get_all_metrics()
+        requests.post(f"https://{SERVER}/metrics/{self.token}")
+
+    def is_registed(self) -> bool:
+        if not self.token:
+            return False
+        # TODO: send reqeuest to check this token is valid
+        return True
+
+    def register(self) -> bool:
+        res = requests.post(f"https://{SERVER}/register")
+        # TODO: get token
+        self.token = ""
+
+    def deregister(self) -> bool:
+        res = requests.delete(f"https://{SERVER}/register")
 
 
-@app.get("/api")
-def main():
-    metrics = get_all_metrics()
-    return metrics
+def process(svc) -> bool:
+    if not svc.is_registed():
+        if not svc.register():
+            print("Service register fail!")
+            return False
+    if svc.push() or svc.push():
+        print("Push data success!!")
+        return True
+    print("Push data fail!")
+    return True
 
 
 if __name__ == "__main__":
-    print(f"Server IP: {SERVER_IP}")
-    uvicorn.run(app, host="0.0.0.0", port=9999)
+    try:
+        svc = Service()
+        schedule.every(5).minutes.at(":00").do(process, svc=svc)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+        pass
+    except KeyboardInterrupt:
+        print("Stopping")
+    finally:
+        svc.deregister()
