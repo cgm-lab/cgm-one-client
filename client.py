@@ -92,7 +92,7 @@ def get_ip() -> str:
     s.connect(("8.8.8.8", 80))
     ip = s.getsockname()[0]
     s.close()
-    if ip.startswith("140.118"):
+    if ip.startswith("140.118") or ip.startswith("192.168"):
         return ip
     return ""
 

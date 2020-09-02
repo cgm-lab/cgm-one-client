@@ -7,52 +7,64 @@ import schedule
 
 from client import get_all_metrics
 
-SERVER = "one.cgm.im"
+# SERVER = "one.cgm.im"
+SERVER = "192.168.0.170:8000"
 
 
-class Service:
-    token: str = ""
-
-    def push(self):
-        metrics = get_all_metrics()
-        requests.post(f"https://{SERVER}/metrics/{self.token}")
+class Host:
+    def __init__(self):
+        self.metrics = get_all_metrics()
 
     def is_registed(self) -> bool:
-        if not self.token:
-            return False
-        # TODO: send reqeuest to check this token is valid
-        return True
+        res = requests.get(f"http://{SERVER}/api/hosts")
+        return self.metrics["ip"] in res.json()
 
     def register(self) -> bool:
-        res = requests.post(f"https://{SERVER}/register")
-        # TODO: get token
-        self.token = ""
+        res = requests.post(
+            f"http://{SERVER}/api/hosts",
+            json=self.metrics,
+        )
+        return res.ok
 
     def deregister(self) -> bool:
-        res = requests.delete(f"https://{SERVER}/register")
+        res = requests.delete(f"http://{SERVER}/api/hosts")
+        return res.ok
+
+    def update_metrics(self) -> bool:
+        self.metrics = get_all_metrics()
+        res = requests.put(f"http://{SERVER}/api/hosts", json=self.metrics)
+        return res.ok
 
 
-def process(svc) -> bool:
-    if not svc.is_registed():
-        if not svc.register():
-            print("Service register fail!")
-            return False
-    if svc.push() or svc.push():
-        print("Push data success!!")
+def process(host) -> bool:
+    print("Start processing...")
+    if not host.is_registed():
+        if host.register():
+            print("Register successful!")
+            return True
+        print("Register fail!")
+        return False
+    if host.update_metrics() or host.update_metrics():
+        print("Update data success!!")
         return True
-    print("Push data fail!")
+    print("Update data fail!")
     return True
 
 
 if __name__ == "__main__":
     try:
-        svc = Service()
-        schedule.every(5).minutes.at(":00").do(process, svc=svc)
+        host = Host()
+        process(host=host)
+        schedule.every(5).minutes.at(":00").do(process, host=host)
         while True:
             schedule.run_pending()
             time.sleep(1)
         pass
     except KeyboardInterrupt:
-        print("Stopping")
+        print("Stopping...")
     finally:
-        svc.deregister()
+        ok = host.deregister()
+        if ok:
+            print("Deregister success!")
+        else:
+            print("Deregister fail!")
