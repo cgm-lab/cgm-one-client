@@ -1,34 +1,69 @@
 import socket
+import sys
+import time
 
-import uvicorn
-from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
+import requests
+import schedule
 
 from client import get_all_metrics
-from utils import get_server_ip
 
-SERVER_IP = get_server_ip()
-
-app = FastAPI()
+SERVER = "one.cgm.im"
 
 
-@app.middleware("http")
-async def source_host_check(request, call_next):
-    """Only allow CGM Lab server"""
-    ip = request.client.host
-    if ip not in ["127.0.0.1", SERVER_IP]:
-        print(ip, "is not allowed!")
-        return JSONResponse({}, status_code=status.HTTP_403_FORBIDDEN)
-    response = await call_next(request)
-    return response
+class Host:
+    def __init__(self):
+        self.metrics = get_all_metrics()
+
+    def is_registed(self) -> bool:
+        res = requests.get(f"https://{SERVER}/api/hosts")
+        return self.metrics["ip"] in res.json()
+
+    def register(self) -> bool:
+        res = requests.post(
+            f"https://{SERVER}/api/hosts",
+            json=self.metrics,
+        )
+        return res.ok
+
+    def deregister(self) -> bool:
+        res = requests.delete(f"https://{SERVER}/api/hosts")
+        return res.ok
+
+    def update_metrics(self) -> bool:
+        self.metrics = get_all_metrics()
+        res = requests.put(f"https://{SERVER}/api/hosts", json=self.metrics)
+        return res.ok
 
 
-@app.get("/api")
-def main():
-    metrics = get_all_metrics()
-    return metrics
+def process(host) -> bool:
+    print("Start processing...")
+    if not host.is_registed():
+        if host.register():
+            print("Register successful!")
+            return True
+        print("Register fail!")
+        return False
+    if host.update_metrics() or host.update_metrics():
+        print("Update data success!!")
+        return True
+    print("Update data fail!")
+    return True
 
 
 if __name__ == "__main__":
-    print(f"Server IP: {SERVER_IP}")
-    uvicorn.run(app, host="0.0.0.0", port=9999)
+    try:
+        host = Host()
+        process(host=host)
+        schedule.every(5).minutes.at(":00").do(process, host=host)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+        pass
+    except KeyboardInterrupt:
+        print("Stopping...")
+    finally:
+        ok = host.deregister()
+        if ok:
+            print("Deregister success!")
+        else:
+            print("Deregister fail!")

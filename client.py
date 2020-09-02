@@ -12,7 +12,7 @@ units = {"TB": 1024 ** 4, "GB": 1024 ** 3, "MB": 1024 ** 2, "KB": 1024 ** 1}
 
 
 def get_all_metrics(unit: str = "GB"):
-    return {
+    metrics = {
         "os": get_os_platform(),
         "ip": get_ip(),
         "cpu": get_cpu_usage(),
@@ -21,6 +21,9 @@ def get_all_metrics(unit: str = "GB"):
         "vram": get_gups_vram(unit),
         "net": get_ntust_net_usage(unit),
     }
+    if not metrics["net"]:
+        del metrics["net"]
+    return metrics
 
 
 # OS
@@ -92,7 +95,7 @@ def get_ip() -> str:
     s.connect(("8.8.8.8", 80))
     ip = s.getsockname()[0]
     s.close()
-    if ip.startswith("140.118"):
+    if ip.startswith("140.118") or ip.startswith("192.168"):
         return ip
     return ""
 
@@ -100,9 +103,9 @@ def get_ip() -> str:
 # Get NTUST network usage
 def get_ntust_net_usage(unit: str = "GB"):
     ip = get_ip()
-    if not ip:
+    if not ip or not ip.startswith("140.118"):
         print("IP not in school")
-        return {"total": 1, "used": 0, "unit": "?"}
+        return {}
     res = requests.post(
         "https://network.ntust.edu.tw/flowStatistics/getFlowData",
         {"ip": ip, "dt": str(datetime.today().date()), "units": "0"},

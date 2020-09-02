@@ -1,5 +1,4 @@
-fastapi
-uvicorn
 psutil
 gputil
 requests
+schedule
