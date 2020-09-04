@@ -103,7 +103,9 @@ def get_ip() -> str:
 # Get NTUST network usage
 def get_ntust_net_usage(unit: str = "GB"):
     ip = get_ip()
-    if not ip or not ip.startswith("140.118"):
+    if ip == "192.168.0.10":  # DMZ
+        ip = "140.118.9.222"
+    elif not ip or not ip.startswith("140.118"):
         print("IP not in school")
         return {}
     res = requests.post(
