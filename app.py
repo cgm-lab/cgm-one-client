@@ -5,11 +5,9 @@ import time
 import requests
 import schedule
 
-from client import get_all_metrics, get_ip
+from client import get_all_metrics
 
-URL = "https://one.cgm.im"
-if get_ip().startswith("192.168"):
-    URL = "http://192.168.10"
+SERVER = "one.cgm.im"
 
 
 class Host:
