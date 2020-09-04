@@ -17,23 +17,23 @@ class Host:
         self.metrics = get_all_metrics()
 
     def is_registed(self) -> bool:
-        res = requests.get(f"{URL}/api/hosts")
+        res = requests.get(f"https://{SERVER}/api/hosts")
         return self.metrics["ip"] in res.json()
 
     def register(self) -> bool:
         res = requests.post(
-            f"{URL}/api/hosts",
+            f"https://{SERVER}/api/hosts",
             json=self.metrics,
         )
         return res.ok
 
     def deregister(self) -> bool:
-        res = requests.delete(f"{URL}/api/hosts")
+        res = requests.delete(f"https://{SERVER}/api/hosts")
         return res.ok
 
     def update_metrics(self) -> bool:
         self.metrics = get_all_metrics()
-        res = requests.put(f"{URL}/api/hosts", json=self.metrics)
+        res = requests.put(f"https://{SERVER}/api/hosts", json=self.metrics)
         return res.ok
 
 
