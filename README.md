@@ -27,7 +27,6 @@ python app.py
 - Linux
   - Copy file from `service/cgm-one-client.service` to `/etc/systemd/system/cgm-one-client.service`
   - Modify user name
-  - ufw firewall `sudo ufw allow proto tcp from 140.118.0.0/16 to any port 9999`
   - <https://askubuntu.com/a/919059>
 - Windows
   - Disable `Quick Edit mode` in CMD
